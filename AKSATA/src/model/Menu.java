@@ -1,30 +1,30 @@
 package model;
 
 public class Menu {
-    private int id;
+    private int id; // ID Menu
     private String name;
     private String category;
-    private String deskripsi;   
-    private String namaPetani;  
-    private boolean isAvailable;
+    private String description;
+    private String namaPetani;
     private FlavorProfile flavorProfile;
+    private double price;
 
     // Constructor Updated
-    public Menu(int id, String name, String category, String deskripsi, String namaPetani, FlavorProfile profile) {
+    public Menu(int id, String name, String category, String description, 
+                String namaPetani, FlavorProfile flavorProfile, double price) {
         this.id = id;
         this.name = name;
         this.category = category;
-        this.deskripsi = deskripsi;
+        this.description = description;
         this.namaPetani = namaPetani;
-        this.flavorProfile = profile;
-        this.isAvailable = true;
+        this.flavorProfile = flavorProfile;
+        this.price = price;
     }
 
+    // Getter
     public int getId() { return id; }
     public String getName() { return name; }
-    public String getNamaPetani() { return namaPetani; }
-    
-    public String getDetails() {
-        return name + "\nPetani: " + namaPetani + "\nDeskripsi: " + deskripsi;
-    }
+    public String getDescription() { return description; }
+    public double getPrice() { return price; } // <--- Getter Baru
+    // ... getter lainnya jika perlu
 }

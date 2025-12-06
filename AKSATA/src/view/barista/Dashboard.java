@@ -12,9 +12,9 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Rapjak
  */
-public class dahshboard extends javax.swing.JFrame {
+public class Dashboard extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(dahshboard.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Dashboard.class.getName());
     // Panggil Controller
     BaristaController controller = new BaristaController();
     
@@ -23,9 +23,9 @@ public class dahshboard extends javax.swing.JFrame {
     DefaultTableModel modelClosing;
 
     /**
-     * Creates new form dahshboard
+     * Creates new form dashboard
      */
-    public dahshboard() {
+    public Dashboard() {
         initComponents();
         
         // 1. Setup Model Tabel Pesanan
@@ -227,11 +227,17 @@ public class dahshboard extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 894, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1)
+                .addGap(16, 16, 16))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jTabbedPane1)
+                .addContainerGap())
         );
 
         pack();
@@ -262,58 +268,58 @@ public class dahshboard extends javax.swing.JFrame {
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
         // 1. Ambil input dari TextField
-    String namaBahan = jenisBahanTextField.getText(); 
-    String strJumlah = jumlahTextField.getText();
-    
-    // 2. Validasi ID Bahan (Karena input manual teks, harus dicari ID-nya)
-    int idBahan = controller.getIdBahanByName(namaBahan);
-    
-    if (idBahan == -1) {
-        JOptionPane.showMessageDialog(this, "Nama Bahan tidak ditemukan di database!");
-        return;
-    }
-    
-    try {
-        double jumlah = Double.parseDouble(strJumlah);
-        // 3. Simpan via Controller
-        boolean sukses = controller.submitRestock(idBahan, jumlah);
-        
-        if (sukses) {
-            JOptionPane.showMessageDialog(this, "Stok berhasil ditambahkan!");
-            // Reset Form
-            jenisBahanTextField.setText("");
-            jumlahTextField.setText("");
-            keteranganTextField.setText("");
-            refreshData(); // Update juga tabel closing supaya stok sistem nambah
+        String namaBahan = jenisBahanTextField.getText(); 
+        String strJumlah = jumlahTextField.getText();
+
+        // 2. Validasi ID Bahan (Karena input manual teks, harus dicari ID-nya)
+        int idBahan = controller.getIdBahanByName(namaBahan);
+
+        if (idBahan == -1) {
+            JOptionPane.showMessageDialog(this, "Nama Bahan tidak ditemukan di database!");
+            return;
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka!");
-    }
+
+        try {
+            double jumlah = Double.parseDouble(strJumlah);
+            // 3. Simpan via Controller
+            boolean sukses = controller.submitRestock(idBahan, jumlah);
+
+            if (sukses) {
+                JOptionPane.showMessageDialog(this, "Stok berhasil ditambahkan!");
+                // Reset Form
+                jenisBahanTextField.setText("");
+                jumlahTextField.setText("");
+                keteranganTextField.setText("");
+                refreshData(); // Update juga tabel closing supaya stok sistem nambah
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka!");
+        }
     }//GEN-LAST:event_submitButtonActionPerformed
 
     private void submitClosingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitClosingButtonActionPerformed
         // Loop semua baris di tabel closing
-    for (int i = 0; i < stockTable.getRowCount(); i++) {
-        try {
-            int idBahan = Integer.parseInt(stockTable.getValueAt(i, 0).toString());
-            String sysStr = stockTable.getValueAt(i, 2).toString().split(" ")[0];
-            double stokSistem = Double.parseDouble(sysStr);
-            
-            // Cek apakah Barista sudah isi stok fisik?
-            Object fisikObj = stockTable.getValueAt(i, 3);
-            if (fisikObj != null && !fisikObj.toString().equals("0.0")) {
-                double stokFisik = Double.parseDouble(fisikObj.toString());
-                String alasan = (stockTable.getValueAt(i, 5) != null) ? stockTable.getValueAt(i, 5).toString() : "-";
-                
-                // Kirim ke database
-                controller.submitStockOpname(idBahan, stokSistem, stokFisik, alasan);
+        for (int i = 0; i < stockTable.getRowCount(); i++) {
+            try {
+                int idBahan = Integer.parseInt(stockTable.getValueAt(i, 0).toString());
+                String sysStr = stockTable.getValueAt(i, 2).toString().split(" ")[0];
+                double stokSistem = Double.parseDouble(sysStr);
+
+                // Cek apakah Barista sudah isi stok fisik?
+                Object fisikObj = stockTable.getValueAt(i, 3);
+                if (fisikObj != null && !fisikObj.toString().equals("0.0")) {
+                    double stokFisik = Double.parseDouble(fisikObj.toString());
+                    String alasan = (stockTable.getValueAt(i, 5) != null) ? stockTable.getValueAt(i, 5).toString() : "-";
+
+                    // Kirim ke database
+                    controller.submitStockOpname(idBahan, stokSistem, stokFisik, alasan);
+                }
+            } catch (Exception e) {
+                System.out.println("Skip baris " + i + " karena data tidak lengkap");
             }
-        } catch (Exception e) {
-            System.out.println("Skip baris " + i + " karena data tidak lengkap");
         }
-    }
-    JOptionPane.showMessageDialog(this, "Laporan Closing Terkirim!");
-    refreshData();
+        JOptionPane.showMessageDialog(this, "Laporan Closing Terkirim!");
+        refreshData();
     }//GEN-LAST:event_submitClosingButtonActionPerformed
 
     /**
@@ -338,7 +344,7 @@ public class dahshboard extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new dahshboard().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new Dashboard().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
