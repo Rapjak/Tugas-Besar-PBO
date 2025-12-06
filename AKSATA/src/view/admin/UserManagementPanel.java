@@ -1,22 +1,22 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package view.admin;
 import controller.AdminController;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Rapjak
  */
 public class UserManagementPanel extends javax.swing.JPanel {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(UserManagementPanel.class.getName());
     AdminController controller = new AdminController();
 
     /**
-     * Creates new form UserManagementPanel
+     * Creates new form User
      */
     public UserManagementPanel() {
         initComponents();
@@ -60,9 +60,6 @@ public class UserManagementPanel extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblUserLogs = new javax.swing.JTable();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        getContentPane().setLayout(new java.awt.GridLayout(1, 2));
 
         tblUsers.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -138,8 +135,6 @@ public class UserManagementPanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        getContentPane().add(jPanel2);
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("Log Aktivitas User Terpilih");
 
@@ -179,9 +174,30 @@ public class UserManagementPanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        getContentPane().add(jPanel1);
-
-        pack();
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1134, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, 0)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 694, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
     }// </editor-fold>//GEN-END:initComponents
 
     private void tambahUserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahUserButtonActionPerformed
@@ -190,7 +206,7 @@ public class UserManagementPanel extends javax.swing.JPanel {
         String pass = JOptionPane.showInputDialog(this, "Masukkan Password:");
         String[] roles = {"admin", "manager", "barista"};
         int roleIdx = JOptionPane.showOptionDialog(this, "Pilih Role", "Role", 0, 3, null, roles, roles[2]);
-        
+
         if(user != null && pass != null && roleIdx != -1) {
             // Jika Barista, tanya cabang mana
             int idCabang = 0; // 0 = Pusat/Admin
@@ -198,7 +214,7 @@ public class UserManagementPanel extends javax.swing.JPanel {
                 String idStr = JOptionPane.showInputDialog(this, "Masukkan ID Cabang (Angka):");
                 try { idCabang = Integer.parseInt(idStr); } catch (Exception e) {}
             }
-            
+
             controller.addUser(user, pass, roles[roleIdx], idCabang);
             refreshUserTable();
             JOptionPane.showMessageDialog(this, "User Berhasil Ditambah!");
@@ -224,10 +240,10 @@ public class UserManagementPanel extends javax.swing.JPanel {
         if (row != -1) {
             int idUser = Integer.parseInt(tblUsers.getValueAt(row, 0).toString());
             String username = tblUsers.getValueAt(row, 1).toString();
-            
-            String newPass = javax.swing.JOptionPane.showInputDialog(this, 
-                    "Masukkan Password Baru untuk " + username + ":");
-            
+
+            String newPass = javax.swing.JOptionPane.showInputDialog(this,
+                "Masukkan Password Baru untuk " + username + ":");
+
             if (newPass != null && !newPass.isEmpty()) {
                 controller.resetUserPassword(idUser, newPass);
                 javax.swing.JOptionPane.showMessageDialog(this, "Password Berhasil Direset!");
@@ -237,30 +253,6 @@ public class UserManagementPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_resetPasswordButtonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new UserManagementPanel().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton hapusButton;

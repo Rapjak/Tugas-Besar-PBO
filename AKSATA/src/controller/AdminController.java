@@ -271,4 +271,49 @@ public class AdminController {
             ps.executeUpdate();
         } catch (SQLException e) { e.printStackTrace(); }
     }
+    
+    // ================= TAMBAHAN LOGIC MENU & PROMO =================
+    
+    // 1. Update Harga Menu
+    public void updateMenuPrice(int idMenu, double newPrice) {
+        try {
+            String sql = "UPDATE menu_harga SET harga_jual = ? WHERE id_menu = ?"; 
+            // Catatan: Idealnya update berdasarkan ukuran juga, tapi ini versi simpel update semua ukuran menu tsb
+            // Atau jika tabel Anda spesifik ID Menu Harga, gunakan id_harga. 
+            // Asumsi sederhana: Update harga dasar menu.
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setDouble(1, newPrice);
+            ps.setInt(2, idMenu);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
+
+    // 2. Tambah Promo Baru
+    public void addDiskon(int idCabang, String nama, String tipe, double nilai, double minBelanja, String start, String end) {
+        try {
+            // 1. Insert ke Master Diskon
+            String sql1 = "INSERT INTO diskon (nama_promo, tipe, nilai, min_belanja, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps1 = conn.prepareStatement(sql1, Statement.RETURN_GENERATED_KEYS);
+            ps1.setString(1, nama);
+            ps1.setString(2, tipe);
+            ps1.setDouble(3, nilai);
+            ps1.setDouble(4, minBelanja);
+            ps1.setString(5, start);
+            ps1.setString(6, end);
+            ps1.executeUpdate();
+            
+            // Ambil ID Diskon yang baru dibuat
+            ResultSet rs = ps1.getGeneratedKeys();
+            int idDiskon = 0;
+            if (rs.next()) idDiskon = rs.getInt(1);
+            
+            // 2. Hubungkan ke Cabang (diskon_cabang)
+            String sql2 = "INSERT INTO diskon_cabang (id_diskon, id_cabang, is_active) VALUES (?, ?, 1)";
+            PreparedStatement ps2 = conn.prepareStatement(sql2);
+            ps2.setInt(1, idDiskon);
+            ps2.setInt(2, idCabang);
+            ps2.executeUpdate();
+            
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
 }

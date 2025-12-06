@@ -1,23 +1,22 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
  */
 package view.admin;
 import controller.AdminController;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Rapjak
  */
 public class BranchDetailPanel extends javax.swing.JPanel {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(BranchDetailPanel.class.getName());
+
     AdminController controller = new AdminController();
     int currentCabangID = 0;
-
     /**
-     * Creates new form BranchDetailPanel
+     * Creates new form Branch
      */
     public BranchDetailPanel() {
         initComponents();
@@ -75,14 +74,12 @@ public class BranchDetailPanel extends javax.swing.JPanel {
         jScrollPane5 = new javax.swing.JScrollPane();
         tblDiskon = new javax.swing.JTable();
         setUnavailableButton = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        tambahPromoBaruButton = new javax.swing.JButton();
         ubahHargaButton = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         tblLogTransaksi = new javax.swing.JTable();
         lblNamaCabang = new javax.swing.JLabel();
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         tblTopSelling.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -117,7 +114,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 501, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 84, Short.MAX_VALUE)
                 .addComponent(pnlPieChart, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -152,7 +149,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1090, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 1076, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -184,7 +181,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1096, Short.MAX_VALUE))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 1082, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,11 +232,6 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             }
         });
         jScrollPane4.setViewportView(tblMenuCabang);
-        if (tblMenuCabang.getColumnModel().getColumnCount() > 0) {
-            tblMenuCabang.getColumnModel().getColumn(0).setMinWidth(0);
-            tblMenuCabang.getColumnModel().getColumn(0).setPreferredWidth(0);
-            tblMenuCabang.getColumnModel().getColumn(0).setMaxWidth(0);
-        }
 
         tblDiskon.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -261,11 +253,6 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             }
         });
         jScrollPane5.setViewportView(tblDiskon);
-        if (tblDiskon.getColumnModel().getColumnCount() > 0) {
-            tblDiskon.getColumnModel().getColumn(0).setMinWidth(0);
-            tblDiskon.getColumnModel().getColumn(0).setPreferredWidth(0);
-            tblDiskon.getColumnModel().getColumn(0).setMaxWidth(0);
-        }
 
         setUnavailableButton.setText("Set Unavailable");
         setUnavailableButton.addActionListener(new java.awt.event.ActionListener() {
@@ -274,7 +261,12 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             }
         });
 
-        jButton2.setText("Tambah Promo Baru");
+        tambahPromoBaruButton.setText("Tambah Promo Baru");
+        tambahPromoBaruButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tambahPromoBaruButtonActionPerformed(evt);
+            }
+        });
 
         ubahHargaButton.setText("Ubah Harga");
         ubahHargaButton.addActionListener(new java.awt.event.ActionListener() {
@@ -295,10 +287,10 @@ public class BranchDetailPanel extends javax.swing.JPanel {
                         .addComponent(setUnavailableButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(ubahHargaButton)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 531, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addComponent(tambahPromoBaruButton, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -311,7 +303,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(setUnavailableButton)
-                    .addComponent(jButton2)
+                    .addComponent(tambahPromoBaruButton)
                     .addComponent(ubahHargaButton))
                 .addGap(24, 24, 24))
         );
@@ -337,7 +329,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1108, Short.MAX_VALUE))
+                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 1094, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -352,8 +344,8 @@ public class BranchDetailPanel extends javax.swing.JPanel {
         lblNamaCabang.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         lblNamaCabang.setText("Laporan Cabang: [Nama Cabang]");
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -370,11 +362,9 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(lblNamaCabang)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 593, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
-
-        pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void setUnavailableButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setUnavailableButtonActionPerformed
@@ -382,7 +372,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
         if (row != -1) {
             int idMenu = (int) tblMenuCabang.getValueAt(row, 0); // Pastikan Kolom 0 itu ID Menu
             boolean currentStatus = (boolean) tblMenuCabang.getValueAt(row, 5); // Kolom 5 itu Status (Checkbox)
-            
+
             // Toggle (Balik nilai)
             controller.updateMenuStatus(currentCabangID, idMenu, !currentStatus);
             refreshTables();
@@ -393,36 +383,70 @@ public class BranchDetailPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_setUnavailableButtonActionPerformed
 
     private void ubahHargaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ubahHargaButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ubahHargaButtonActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
+        int row = tblMenuCabang.getSelectedRow();
+        if (row != -1) {
+            int idMenu = Integer.parseInt(tblMenuCabang.getValueAt(row, 0).toString());
+            String namaMenu = tblMenuCabang.getValueAt(row, 1).toString();
+            String hargaLama = tblMenuCabang.getValueAt(row, 4).toString();
+            
+            String hargaBaruStr = JOptionPane.showInputDialog(this, 
+                    "Ubah Harga untuk " + namaMenu + "\nHarga Lama: " + hargaLama, hargaLama);
+            
+            if (hargaBaruStr != null) {
+                try {
+                    double hargaBaru = Double.parseDouble(hargaBaruStr);
+                    controller.updateMenuPrice(idMenu, hargaBaru);
+                    refreshTables(); // Refresh agar tabel update
+                    JOptionPane.showMessageDialog(this, "Harga Berhasil Diubah!");
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Input harus angka!");
                 }
             }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        } else {
+            JOptionPane.showMessageDialog(this, "Pilih menu yang mau diubah harganya!");
         }
-        //</editor-fold>
+    }//GEN-LAST:event_ubahHargaButtonActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new BranchDetailPanel().setVisible(true));
-    }
+    private void tambahPromoBaruButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahPromoBaruButtonActionPerformed
+        // Membuat Form Input Manual menggunakan JPanel di dalam JOptionPane
+        javax.swing.JPanel p = new javax.swing.JPanel(new java.awt.GridLayout(0, 2));
+        javax.swing.JTextField txtNama = new javax.swing.JTextField();
+        String[] tipe = {"persen", "nominal"};
+        javax.swing.JComboBox<String> cbTipe = new javax.swing.JComboBox<>(tipe);
+        javax.swing.JTextField txtNilai = new javax.swing.JTextField();
+        javax.swing.JTextField txtMin = new javax.swing.JTextField("0");
+        javax.swing.JTextField txtStart = new javax.swing.JTextField("2023-01-01");
+        javax.swing.JTextField txtEnd = new javax.swing.JTextField("2023-12-31");
+
+        p.add(new javax.swing.JLabel("Nama Promo:")); p.add(txtNama);
+        p.add(new javax.swing.JLabel("Tipe:")); p.add(cbTipe);
+        p.add(new javax.swing.JLabel("Nilai (Ex: 10 or 5000):")); p.add(txtNilai);
+        p.add(new javax.swing.JLabel("Min Belanja:")); p.add(txtMin);
+        p.add(new javax.swing.JLabel("Mulai (YYYY-MM-DD):")); p.add(txtStart);
+        p.add(new javax.swing.JLabel("Selesai (YYYY-MM-DD):")); p.add(txtEnd);
+
+        int result = JOptionPane.showConfirmDialog(this, p, "Tambah Promo Baru", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                controller.addDiskon(
+                    currentCabangID, 
+                    txtNama.getText(),
+                    cbTipe.getSelectedItem().toString(),
+                    Double.parseDouble(txtNilai.getText()),
+                    Double.parseDouble(txtMin.getText()),
+                    txtStart.getText(),
+                    txtEnd.getText()
+                );
+                refreshTables();
+                JOptionPane.showMessageDialog(this, "Promo Berhasil Ditambahkan!");
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this, "Gagal! Pastikan format angka dan tanggal benar.");
+            }
+        }
+    }//GEN-LAST:event_tambahPromoBaruButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -440,6 +464,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
     private javax.swing.JLabel lblNamaCabang;
     private javax.swing.JPanel pnlPieChart;
     private javax.swing.JButton setUnavailableButton;
+    private javax.swing.JButton tambahPromoBaruButton;
     private javax.swing.JTable tblDiskon;
     private javax.swing.JTable tblLogTransaksi;
     private javax.swing.JTable tblMenuCabang;

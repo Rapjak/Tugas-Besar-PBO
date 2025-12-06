@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
-import view.barista.Dashboard;
+import view.barista.Barista;
 
 /**
  *
@@ -156,7 +156,7 @@ public class LoginPage extends javax.swing.JFrame {
 
         if (loggedUser != null) {
             javax.swing.JOptionPane.showMessageDialog(this, "Login Berhasil! Role: " + loggedUser.getRole());
-            new Dashboard().setVisible(true);
+            new Barista().setVisible(true);
 
             this.dispose(); 
         } else {
