@@ -12,9 +12,9 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Rapjak
  */
-public class Barista extends javax.swing.JFrame {
+public class Dashboard extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Barista.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Dashboard.class.getName());
     // Panggil Controller
     BaristaController controller = new BaristaController();
     
@@ -25,7 +25,7 @@ public class Barista extends javax.swing.JFrame {
     /**
      * Creates new form dashboard
      */
-    public Barista() {
+    public Dashboard() {
         initComponents();
         
         // 1. Setup Model Tabel Pesanan
@@ -344,7 +344,7 @@ public class Barista extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Barista().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new Dashboard().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
