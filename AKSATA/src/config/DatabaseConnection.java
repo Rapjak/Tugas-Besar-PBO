@@ -10,7 +10,6 @@ public class DatabaseConnection {
     public static Connection getConnection() {
         if (connection == null) {
             try {
-                // Ganti user/password sesuai setting MySQL Anda
                 String url = "jdbc:mysql://localhost:3306/db_aksata";
                 String user = "root"; 
                 String password = ""; 
