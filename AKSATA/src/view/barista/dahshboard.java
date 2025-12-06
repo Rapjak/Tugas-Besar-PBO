@@ -3,7 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view.barista;
-
+import controller.BaristaController;
+import javax.swing.JOptionPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 /**
  *
  * @author Rapjak
@@ -11,12 +15,80 @@ package view.barista;
 public class dahshboard extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(dahshboard.class.getName());
+    // Panggil Controller
+    BaristaController controller = new BaristaController();
+    
+    // Model Tabel
+    DefaultTableModel modelPesanan;
+    DefaultTableModel modelClosing;
 
     /**
      * Creates new form dahshboard
      */
     public dahshboard() {
         initComponents();
+        
+        // 1. Setup Model Tabel Pesanan
+        // Kolom sesuai desain kamu: ID, Menu, Qty, Detail, Status
+        String[] headerPesanan = {"ID Transaksi", "Menu", "Qty", "Detail", "Status"};
+        modelPesanan = new DefaultTableModel(null, headerPesanan);
+        pesananTable.setModel(modelPesanan); // Pastikan variable name tabel kamu 'pesananTable'
+        
+        // 2. Setup Model Tabel Closing
+        // Kolom: ID(Hidden), Bahan, Stok Sistem, Stok Fisik, Selisih, Alasan
+        // Note: ID kita taruh di kolom 0 tapi nanti kita sembunyikan atau biarkan saja
+        String[] headerClosing = {"ID Bahan", "Nama Bahan", "Stok Sistem", "Stok Fisik", "Selisih", "Alasan"};
+        // Override isCellEditable agar kolom Stok Fisik & Alasan bisa diedit user
+        modelClosing = new DefaultTableModel(null, headerClosing) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 3 || column == 5; // Hanya kolom Stok Fisik (idx 3) & Alasan (idx 5) yang bisa diedit
+            }
+        };
+        stockTable.setModel(modelClosing);
+        
+        // Load Data Awal
+        refreshData();
+        setupClosingTableCalculation(); // Method Khusus Rumus Otomatis
+    }
+    
+    public void refreshData() {
+        controller.loadPesananTable(modelPesanan);
+        controller.loadClosingTable(modelClosing);
+    }
+    
+    private void setupClosingTableCalculation() {
+        modelClosing.addTableModelListener(new TableModelListener() {
+            @Override
+            public void tableChanged(TableModelEvent e) {
+                // Cek jika yang diedit adalah kolom "Stok Fisik" (Index 3)
+                if (e.getType() == TableModelEvent.UPDATE && e.getColumn() == 3) {
+                    int row = e.getFirstRow();
+                    
+                    try {
+                        // 1. Ambil Nilai Stok Sistem (String "1000 gram" -> Ambil angkanya saja)
+                        String sysStr = modelClosing.getValueAt(row, 2).toString().split(" ")[0];
+                        double stokSistem = Double.parseDouble(sysStr);
+                        
+                        // 2. Ambil Input Barista (Stok Fisik)
+                        double stokFisik = Double.parseDouble(modelClosing.getValueAt(row, 3).toString());
+                        
+                        // 3. RUMUS SELISIH
+                        // Stok Sistem vs Stok Fisik = Selisih
+                        double selisih = stokFisik - stokSistem;
+                        
+                        // 4. Update Kolom Selisih (Index 4) secara otomatis
+                        // Kita matikan listener sebentar agar tidak looping infinit
+                        modelClosing.removeTableModelListener(this); 
+                        modelClosing.setValueAt(selisih, row, 4);
+                        modelClosing.addTableModelListener(this); // Pasang lagi
+                        
+                    } catch (Exception ex) {
+                        // Jika input bukan angka, abaikan
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -28,21 +100,221 @@ public class dahshboard extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        pesananPanel = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        pesananTable = new javax.swing.JTable();
+        jLabel2 = new javax.swing.JLabel();
+        prosesPesananButton = new javax.swing.JButton();
+        pesananSiapButton = new javax.swing.JButton();
+        closingPanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        stockTable = new javax.swing.JTable();
+        jLabel5 = new javax.swing.JLabel();
+        submitClosingButton = new javax.swing.JButton();
+        restockPanel = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        keteranganTextField = new javax.swing.JTextField();
+        jenisBahanTextField = new javax.swing.JTextField();
+        jumlahTextField = new javax.swing.JTextField();
+        submitButton = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        pesananPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        pesananTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "Menu", "Quantity", "Detail", "Status"
+            }
+        ));
+        jScrollPane2.setViewportView(pesananTable);
+
+        pesananPanel.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 880, 410));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel2.setText("Pesanan Masuk");
+        pesananPanel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, -1, -1));
+
+        prosesPesananButton.setText("Proses Pesanan");
+        prosesPesananButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                prosesPesananButtonActionPerformed(evt);
+            }
+        });
+        pesananPanel.add(prosesPesananButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 510, -1, -1));
+
+        pesananSiapButton.setText("Pesanan Siap");
+        pesananSiapButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pesananSiapButtonActionPerformed(evt);
+            }
+        });
+        pesananPanel.add(pesananSiapButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 510, -1, -1));
+
+        jTabbedPane1.addTab("Pesanan", pesananPanel);
+
+        closingPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        stockTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Bahan", "Stok Sistem", "Stok Fisik", "Selisih", "Alasan"
+            }
+        ));
+        jScrollPane1.setViewportView(stockTable);
+
+        closingPanel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 83, 876, 420));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel5.setText("Stock Opname");
+        closingPanel.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, -1, -1));
+
+        submitClosingButton.setText("Submit");
+        submitClosingButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitClosingButtonActionPerformed(evt);
+            }
+        });
+        closingPanel.add(submitClosingButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 510, -1, -1));
+
+        jTabbedPane1.addTab("Closing", closingPanel);
+
+        restockPanel.setBackground(new java.awt.Color(204, 204, 204));
+        restockPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel1.setText("Jenis Bahan : ");
+        restockPanel.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 100, -1, -1));
+
+        jLabel3.setText("Jumlah/Berat : ");
+        restockPanel.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 130, -1, -1));
+
+        jLabel4.setText("Keterangan : ");
+        restockPanel.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 160, -1, -1));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
+        jLabel6.setText("Barang Masuk");
+        restockPanel.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, -1, -1));
+        restockPanel.add(keteranganTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 370, -1));
+        restockPanel.add(jenisBahanTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 100, 370, -1));
+        restockPanel.add(jumlahTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 370, -1));
+
+        submitButton.setText("Submit");
+        submitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                submitButtonActionPerformed(evt);
+            }
+        });
+        restockPanel.add(submitButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 220, -1, -1));
+
+        jTabbedPane1.addTab("Restock", restockPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 874, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 894, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 567, Short.MAX_VALUE)
+            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 576, Short.MAX_VALUE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void prosesPesananButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_prosesPesananButtonActionPerformed
+        // Ambil baris yang dipilih
+    int row = pesananTable.getSelectedRow();
+    if (row != -1) {
+        String idTrx = pesananTable.getValueAt(row, 0).toString();
+        // Panggil Controller
+        controller.updateStatusPesanan(idTrx, "diproses");
+        refreshData(); // Refresh tabel
+    } else {
+        JOptionPane.showMessageDialog(this, "Pilih pesanan dulu!");
+    }
+    }//GEN-LAST:event_prosesPesananButtonActionPerformed
+
+    private void pesananSiapButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pesananSiapButtonActionPerformed
+        int row = pesananTable.getSelectedRow();
+    if (row != -1) {
+        String idTrx = pesananTable.getValueAt(row, 0).toString();
+        controller.updateStatusPesanan(idTrx, "siap");
+        refreshData();
+        JOptionPane.showMessageDialog(this, "Customer akan dipanggil!");
+    }
+    }//GEN-LAST:event_pesananSiapButtonActionPerformed
+
+    private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
+        // 1. Ambil input dari TextField
+    String namaBahan = jenisBahanTextField.getText(); 
+    String strJumlah = jumlahTextField.getText();
+    
+    // 2. Validasi ID Bahan (Karena input manual teks, harus dicari ID-nya)
+    int idBahan = controller.getIdBahanByName(namaBahan);
+    
+    if (idBahan == -1) {
+        JOptionPane.showMessageDialog(this, "Nama Bahan tidak ditemukan di database!");
+        return;
+    }
+    
+    try {
+        double jumlah = Double.parseDouble(strJumlah);
+        // 3. Simpan via Controller
+        boolean sukses = controller.submitRestock(idBahan, jumlah);
+        
+        if (sukses) {
+            JOptionPane.showMessageDialog(this, "Stok berhasil ditambahkan!");
+            // Reset Form
+            jenisBahanTextField.setText("");
+            jumlahTextField.setText("");
+            keteranganTextField.setText("");
+            refreshData(); // Update juga tabel closing supaya stok sistem nambah
+        }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka!");
+    }
+    }//GEN-LAST:event_submitButtonActionPerformed
+
+    private void submitClosingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitClosingButtonActionPerformed
+        // Loop semua baris di tabel closing
+    for (int i = 0; i < stockTable.getRowCount(); i++) {
+        try {
+            int idBahan = Integer.parseInt(stockTable.getValueAt(i, 0).toString());
+            String sysStr = stockTable.getValueAt(i, 2).toString().split(" ")[0];
+            double stokSistem = Double.parseDouble(sysStr);
+            
+            // Cek apakah Barista sudah isi stok fisik?
+            Object fisikObj = stockTable.getValueAt(i, 3);
+            if (fisikObj != null && !fisikObj.toString().equals("0.0")) {
+                double stokFisik = Double.parseDouble(fisikObj.toString());
+                String alasan = (stockTable.getValueAt(i, 5) != null) ? stockTable.getValueAt(i, 5).toString() : "-";
+                
+                // Kirim ke database
+                controller.submitStockOpname(idBahan, stokSistem, stokFisik, alasan);
+            }
+        } catch (Exception e) {
+            System.out.println("Skip baris " + i + " karena data tidak lengkap");
+        }
+    }
+    JOptionPane.showMessageDialog(this, "Laporan Closing Terkirim!");
+    refreshData();
+    }//GEN-LAST:event_submitClosingButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -70,5 +342,26 @@ public class dahshboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel closingPanel;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextField jenisBahanTextField;
+    private javax.swing.JTextField jumlahTextField;
+    private javax.swing.JTextField keteranganTextField;
+    private javax.swing.JPanel pesananPanel;
+    private javax.swing.JButton pesananSiapButton;
+    private javax.swing.JTable pesananTable;
+    private javax.swing.JButton prosesPesananButton;
+    private javax.swing.JPanel restockPanel;
+    private javax.swing.JTable stockTable;
+    private javax.swing.JButton submitButton;
+    private javax.swing.JButton submitClosingButton;
     // End of variables declaration//GEN-END:variables
 }
