@@ -28,7 +28,9 @@ public class CustDashboard extends javax.swing.JFrame {
     
     private MenuController menuController = new MenuController();
     private OrderController orderController = new OrderController();
-    
+    private double currentDiscount = 0; // Menyimpan total potongan Rupiah
+    private double finalTotal = 0;      // Menyimpan total akhir (Subtotal - Diskon)
+    private java.util.List<model.Discount> activeDiscounts; // List diskon yang tersedia
 
     /**
      * Creates new form dashboard
@@ -45,11 +47,9 @@ public class CustDashboard extends javax.swing.JFrame {
         // Sesuai permintaan: 2 Menu Sampingan
         menuPanel.setLayout(new GridLayout(0, 2, 10, 10)); 
         
-        // 2. SETUP LAYOUT KERANJANG
-        keranjangPanel.setLayout(new BoxLayout(keranjangPanel, BoxLayout.Y_AXIS));
-        
-        // 3. LOAD DATA & EVENTS
+        // 2. LOAD DATA & EVENTS
         loadMenuData();
+        this.activeDiscounts = menuController.getActiveDiscounts(idCabang); // LOAD DISKON
         
         // Fullscreen
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -133,17 +133,7 @@ public class CustDashboard extends javax.swing.JFrame {
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel2.setText("Keranjang");
 
-        javax.swing.GroupLayout keranjangPanelLayout = new javax.swing.GroupLayout(keranjangPanel);
-        keranjangPanel.setLayout(keranjangPanelLayout);
-        keranjangPanelLayout.setHorizontalGroup(
-            keranjangPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 219, Short.MAX_VALUE)
-        );
-        keranjangPanelLayout.setVerticalGroup(
-            keranjangPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 100, Short.MAX_VALUE)
-        );
-
+        keranjangPanel.setLayout(new java.awt.GridLayout());
         jScrollPane2.setViewportView(keranjangPanel);
 
         totalLable.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -359,19 +349,27 @@ public class CustDashboard extends javax.swing.JFrame {
     
     private void updateCartUI() {
         keranjangPanel.removeAll();
-        grandTotal = 0;
+        keranjangPanel.setLayout(new GridLayout(0, 1, 0, 5));
+        double subTotal = 0; // Harga murni barang
 
+        // 1. Hitung Subtotal dari Item Keranjang
         for (int i = 0; i < cartList.size(); i++) {
             CartItem item = cartList.get(i);
             int idx = i;
-
+            
             JPanel itemPanel = new JPanel(new BorderLayout());
-            itemPanel.setMaximumSize(new Dimension(300, 50));
+            // Beri ukuran fix agar terlihat
+            itemPanel.setPreferredSize(new Dimension(200, 60)); 
             itemPanel.setBackground(Color.WHITE);
             itemPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
 
             // Tampilan Info Item
-            JLabel lblInfo = new JLabel("<html><b>" + item.getNamaMenu() + "</b><br><small>" + item.getDetail() + "</small></html>");
+            String detailText = "<html><b>" + item.getNamaMenu() + "</b><br><small>" + item.getDetail();
+            // Tampilkan Note jika ada
+            if(!item.getNote().isEmpty()) detailText += "<br>Note: " + item.getNote();
+            detailText += "</small></html>";
+            
+            JLabel lblInfo = new JLabel(detailText);
             lblInfo.setBorder(new EmptyBorder(5, 5, 5, 0));
             
             JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -396,10 +394,48 @@ public class CustDashboard extends javax.swing.JFrame {
             itemPanel.add(rightPanel, BorderLayout.EAST);
             keranjangPanel.add(itemPanel);
             
-            grandTotal += item.getHarga();
+            // Akumulasi Subtotal
+            subTotal += item.getHarga(); // Harga item sudah termasuk add-on
+        }
+
+        // 2. LOGIC HITUNG DISKON BERTUMPUK (STACKING)
+        currentDiscount = 0; // Reset
+        
+        if (activeDiscounts != null) {
+            for (model.Discount d : activeDiscounts) {
+                // Cek syarat minimal belanja
+                if (subTotal >= d.getMinBelanja()) {
+                    double potonganIni = 0;
+                    
+                    if (d.getTipe().equalsIgnoreCase("nominal")) {
+                        potonganIni = d.getNilai();
+                    } else if (d.getTipe().equalsIgnoreCase("persen")) {
+                        // Persen dari Subtotal Murni (Bukan yang sudah dipotong)
+                        potonganIni = subTotal * (d.getNilai() / 100); 
+                    }
+                    
+                    currentDiscount += potonganIni; // Tambahkan ke tumpukan diskon
+                }
+            }
         }
         
-        totalLable.setText("Total: Rp " + (int)grandTotal);
+        // Cegah diskon minus (lebih besar dari harga)
+        if (currentDiscount > subTotal) {
+            currentDiscount = subTotal;
+        }
+
+        finalTotal = subTotal - currentDiscount; // Total Akhir
+        grandTotal = finalTotal; // Update variabel global lama biar kompatibel
+
+        // 3. Tampilkan Info Rinci
+        String textTotal = "<html>Subtotal: Rp " + (int)subTotal;
+        if (currentDiscount > 0) {
+            textTotal += "<br><font color='green'>Hemat: -Rp " + (int)currentDiscount + "</font>";
+        }
+        textTotal += "<br><b>Total Bayar: Rp " + (int)finalTotal + "</b></html>";
+        
+        totalLable.setText(textTotal); // Update Label UI
+        
         keranjangPanel.revalidate();
         keranjangPanel.repaint();
     }
@@ -409,7 +445,7 @@ public class CustDashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_bungkusComboBoxActionPerformed
 
     private void bayarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bayarButtonActionPerformed
-        // TODO add your handling code here:
+
         if (cartList.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Keranjang kosong!");
             return;
@@ -429,7 +465,7 @@ public class CustDashboard extends javax.swing.JFrame {
 
         if (confirm == JOptionPane.YES_OPTION) {
             // Update method processCheckout di OrderController agar menerima metodeBayar
-            boolean sukses = orderController.processCheckout(idCabang, namaField.getText(), tipePesanan, metodeBayar, grandTotal, cartList);
+            boolean sukses = orderController.processCheckout(idCabang, namaField.getText(), tipePesanan, metodeBayar, grandTotal, currentDiscount, cartList);
             
             if (sukses) {
                 JOptionPane.showMessageDialog(this, "Pesanan Berhasil!");

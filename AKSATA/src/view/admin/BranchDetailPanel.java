@@ -86,6 +86,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
         tambahPromoBaruButton = new javax.swing.JButton();
         ubahHargaButton = new javax.swing.JButton();
         tambahMenuButton = new javax.swing.JButton();
+        aturResepButton = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         tblLogTransaksi = new javax.swing.JTable();
@@ -317,6 +318,13 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             }
         });
 
+        aturResepButton.setText("Atur Resep");
+        aturResepButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                aturResepButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -328,6 +336,8 @@ public class BranchDetailPanel extends javax.swing.JPanel {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(setUnavailableButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(aturResepButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(tambahMenuButton)
                         .addGap(18, 18, 18)
                         .addComponent(ubahHargaButton)))
@@ -349,7 +359,8 @@ public class BranchDetailPanel extends javax.swing.JPanel {
                     .addComponent(setUnavailableButton)
                     .addComponent(tambahPromoBaruButton)
                     .addComponent(ubahHargaButton)
-                    .addComponent(tambahMenuButton))
+                    .addComponent(tambahMenuButton)
+                    .addComponent(aturResepButton))
                 .addGap(24, 24, 24))
         );
 
@@ -561,8 +572,73 @@ public class BranchDetailPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tambahMenuButtonActionPerformed
 
+    private void aturResepButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_aturResepButtonActionPerformed
+        // 1. Cek apakah ada menu yang dipilih?
+        int row = tblMenuCabang.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih dulu menu yang ingin diatur resepnya!");
+            return;
+        }
+
+        // 2. Ambil Data Menu yang dipilih
+        int idMenu = Integer.parseInt(tblMenuCabang.getValueAt(row, 0).toString()); // ID Hidden
+        String namaMenu = tblMenuCabang.getValueAt(row, 1).toString();
+
+        // 3. Siapkan Form Input (ComboBox Bahan & Text Qty)
+        javax.swing.JPanel p = new javax.swing.JPanel(new java.awt.GridLayout(0, 2, 10, 10));
+        
+        // Ambil list bahan dari database
+        java.util.Vector<String> listBahan = controller.getAllBahanNames();
+        if(listBahan.isEmpty()) {
+             JOptionPane.showMessageDialog(this, "Data Bahan Baku Kosong! Isi Master Bahan dulu.");
+             return;
+        }
+
+        javax.swing.JComboBox<String> cbBahan = new javax.swing.JComboBox<>(listBahan);
+        javax.swing.JComboBox<String> cbUkuran = new javax.swing.JComboBox<>(new String[]{"regular", "large", "1liter"});
+        javax.swing.JTextField txtQty = new javax.swing.JTextField();
+
+        p.add(new javax.swing.JLabel("Menu:"));
+        p.add(new javax.swing.JLabel(namaMenu)); // Label statis nama menu
+
+        p.add(new javax.swing.JLabel("Pilih Ukuran:"));
+        p.add(cbUkuran);
+
+        p.add(new javax.swing.JLabel("Pilih Bahan Baku:"));
+        p.add(cbBahan);
+
+        p.add(new javax.swing.JLabel("Jumlah Pakai (Gram/ML/Pcs):"));
+        p.add(txtQty);
+
+        // 4. Tampilkan Dialog
+        int result = JOptionPane.showConfirmDialog(this, p, "Tambah Komposisi Resep", JOptionPane.OK_CANCEL_OPTION);
+
+        if (result == JOptionPane.OK_OPTION) {
+            try {
+                String namaBahan = cbBahan.getSelectedItem().toString();
+                String ukuran = cbUkuran.getSelectedItem().toString();
+                double qty = Double.parseDouble(txtQty.getText());
+                
+                int idBahan = controller.getBahanID(namaBahan);
+                
+                // Simpan ke Database
+                boolean sukses = controller.addResepToMenu(idMenu, ukuran, idBahan, qty);
+                
+                if (sukses) {
+                    JOptionPane.showMessageDialog(this, "Bahan berhasil ditambahkan ke resep!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Gagal! Mungkin bahan ini sudah ada di resep menu tersebut.");
+                }
+                
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Jumlah Pakai harus angka!");
+            }
+        }
+    }//GEN-LAST:event_aturResepButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton aturResepButton;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

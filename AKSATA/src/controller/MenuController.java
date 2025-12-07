@@ -82,4 +82,37 @@ public class MenuController {
         }
         return list;
     }
+    
+    // ... method getAvailableMenus & getAddOnsForMenu yang lama ...
+
+    // TAMBAHAN: Ambil Diskon Aktif
+    public java.util.List<model.Discount> getActiveDiscounts(int idCabang) {
+        java.util.List<model.Discount> list = new java.util.ArrayList<>();
+        Connection conn = config.DatabaseConnection.getConnection();
+        
+        // Query: Join diskon & diskon_cabang, Cek Tanggal & Status Active
+        String sql = "SELECT d.* FROM diskon d " +
+                     "JOIN diskon_cabang dc ON d.id_diskon = dc.id_diskon " +
+                     "WHERE dc.id_cabang = ? AND dc.is_active = 1 " +
+                     "AND CURDATE() BETWEEN d.start_date AND d.end_date";
+        
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, idCabang);
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                list.add(new model.Discount(
+                    rs.getInt("id_diskon"),
+                    rs.getString("nama_promo"),
+                    rs.getString("tipe"),
+                    rs.getDouble("nilai"),
+                    rs.getDouble("min_belanja")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

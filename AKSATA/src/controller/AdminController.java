@@ -368,4 +368,47 @@ public class AdminController {
         }
     }
     
+    // ================== FITUR RESEP (BAHAN BAKU MENU) ==================
+
+    // 1. Ambil Semua Nama Bahan (Untuk ComboBox)
+    public Vector<String> getAllBahanNames() {
+        Vector<String> list = new Vector<>();
+        try {
+            String sql = "SELECT nama_bahan FROM master_bahan ORDER BY nama_bahan ASC";
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) list.add(rs.getString("nama_bahan"));
+        } catch (SQLException e) { e.printStackTrace(); }
+        return list;
+    }
+
+    // 2. Helper: Ambil ID Bahan dari Nama
+    public int getBahanID(String namaBahan) {
+        try {
+            String sql = "SELECT id_bahan FROM master_bahan WHERE nama_bahan = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, namaBahan);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()) return rs.getInt(1);
+        } catch (SQLException e) { e.printStackTrace(); }
+        return 0;
+    }
+
+    // 3. Simpan Resep
+    public boolean addResepToMenu(int idMenu, String ukuran, int idBahan, double qty) {
+        try {
+            String sql = "INSERT INTO resep (id_menu, ukuran, id_bahan, jumlah_pakai) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, idMenu);
+            ps.setString(2, ukuran); // 'regular', 'large', '1liter'
+            ps.setInt(3, idBahan);
+            ps.setDouble(4, qty);
+            ps.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
 }
