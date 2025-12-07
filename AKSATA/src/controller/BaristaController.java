@@ -143,4 +143,22 @@ public class BaristaController {
             return false;
         }
     }
+    
+    // Method untuk mengambil daftar nama bahan untuk ComboBox
+    public java.util.Vector<String> getAllBahanNames() {
+        java.util.Vector<String> listBahan = new java.util.Vector<>();
+        try {
+            // Kita ambil dari master_bahan agar Barista bisa memilih semua opsi yang tersedia
+            String sql = "SELECT nama_bahan FROM master_bahan ORDER BY nama_bahan ASC";
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            
+            while (rs.next()) {
+                listBahan.add(rs.getString("nama_bahan"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return listBahan;
+    }
 }

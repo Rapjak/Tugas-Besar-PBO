@@ -50,11 +50,20 @@ public class Dashboard extends javax.swing.JFrame {
         // Load Data Awal
         refreshData();
         setupClosingTableCalculation(); // Method Khusus Rumus Otomatis
+        loadComboRestock();
     }
     
     public void refreshData() {
         controller.loadPesananTable(modelPesanan);
         controller.loadClosingTable(modelClosing);
+    }
+    
+    private void loadComboRestock() {
+        // Ambil data dari Controller
+        java.util.Vector<String> dataBahan = controller.getAllBahanNames();
+        
+        // Masukkan ke ComboBox
+        cbJenisBahan.setModel(new javax.swing.DefaultComboBoxModel<>(dataBahan));
     }
     
     private void setupClosingTableCalculation() {
@@ -118,9 +127,9 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         keteranganTextField = new javax.swing.JTextField();
-        jenisBahanTextField = new javax.swing.JTextField();
         jumlahTextField = new javax.swing.JTextField();
         submitButton = new javax.swing.JButton();
+        cbJenisBahan = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -210,7 +219,6 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel6.setText("Barang Masuk");
         restockPanel.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 10, -1, -1));
         restockPanel.add(keteranganTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, 370, -1));
-        restockPanel.add(jenisBahanTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 100, 370, -1));
         restockPanel.add(jumlahTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, 370, -1));
 
         submitButton.setText("Submit");
@@ -220,6 +228,9 @@ public class Dashboard extends javax.swing.JFrame {
             }
         });
         restockPanel.add(submitButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 220, -1, -1));
+
+        cbJenisBahan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        restockPanel.add(cbJenisBahan, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 100, 110, -1));
 
         jTabbedPane1.addTab("Restock", restockPanel);
 
@@ -267,33 +278,36 @@ public class Dashboard extends javax.swing.JFrame {
     }//GEN-LAST:event_pesananSiapButtonActionPerformed
 
     private void submitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitButtonActionPerformed
-        // 1. Ambil input dari TextField
-        String namaBahan = jenisBahanTextField.getText(); 
+        // 1. Ambil input dari COMBOBOX (Bukan TextField lagi)
+        String namaBahan = cbJenisBahan.getSelectedItem().toString(); 
         String strJumlah = jumlahTextField.getText();
-
-        // 2. Validasi ID Bahan (Karena input manual teks, harus dicari ID-nya)
+        String keterangan = keteranganTextField.getText(); // Pastikan variabel ini benar
+        
+        // 2. Validasi ID Bahan
         int idBahan = controller.getIdBahanByName(namaBahan);
-
+        
         if (idBahan == -1) {
-            JOptionPane.showMessageDialog(this, "Nama Bahan tidak ditemukan di database!");
+            javax.swing.JOptionPane.showMessageDialog(this, "Error: Bahan tidak dikenali!");
             return;
         }
-
+        
         try {
             double jumlah = Double.parseDouble(strJumlah);
-            // 3. Simpan via Controller
+            // 3. Simpan via Controller (Logic lama tetap dipakai)
             boolean sukses = controller.submitRestock(idBahan, jumlah);
-
+            
             if (sukses) {
-                JOptionPane.showMessageDialog(this, "Stok berhasil ditambahkan!");
+                javax.swing.JOptionPane.showMessageDialog(this, "Stok berhasil ditambahkan!");
+                
                 // Reset Form
-                jenisBahanTextField.setText("");
+                // cbJenisBahan.setSelectedIndex(0); // Opsional: Balik ke pilihan pertama
                 jumlahTextField.setText("");
-                keteranganTextField.setText("");
-                refreshData(); // Update juga tabel closing supaya stok sistem nambah
+                keteranganTextField.setText(""); // Reset keterangan juga jika ada
+                
+                refreshData(); // Refresh tabel stok/closing
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka!");
+            javax.swing.JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka!");
         }
     }//GEN-LAST:event_submitButtonActionPerformed
 
@@ -348,6 +362,7 @@ public class Dashboard extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> cbJenisBahan;
     private javax.swing.JPanel closingPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -358,7 +373,6 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextField jenisBahanTextField;
     private javax.swing.JTextField jumlahTextField;
     private javax.swing.JTextField keteranganTextField;
     private javax.swing.JPanel pesananPanel;
