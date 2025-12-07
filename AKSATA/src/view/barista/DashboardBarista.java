@@ -8,15 +8,17 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import view.landingPage;
 /**
  *
  * @author Rapjak
  */
-public class Dashboard extends javax.swing.JFrame {
+public class DashboardBarista extends javax.swing.JFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Dashboard.class.getName());
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(DashboardBarista.class.getName());
     // Panggil Controller
     BaristaController controller = new BaristaController();
+    private int idCabangBarista;
     
     // Model Tabel
     DefaultTableModel modelPesanan;
@@ -25,9 +27,14 @@ public class Dashboard extends javax.swing.JFrame {
     /**
      * Creates new form dashboard
      */
-    public Dashboard() {
+    public DashboardBarista() {
+        this(1); // Default ke Cabang 1 jika tanpa parameter
+    }
+    
+    public DashboardBarista(int idCabang) {
         initComponents();
-        
+        this.idCabangBarista = idCabang;
+        controller.setCabangID(idCabang);
         // 1. Setup Model Tabel Pesanan
         // Kolom sesuai desain kamu: ID, Menu, Qty, Detail, Status
         String[] headerPesanan = {"ID Transaksi", "Menu", "Qty", "Detail", "Status"};
@@ -116,11 +123,13 @@ public class Dashboard extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         prosesPesananButton = new javax.swing.JButton();
         pesananSiapButton = new javax.swing.JButton();
+        logoutbtn = new javax.swing.JButton();
         closingPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         stockTable = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         submitClosingButton = new javax.swing.JButton();
+        logoutbtn2 = new javax.swing.JButton();
         restockPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -130,6 +139,7 @@ public class Dashboard extends javax.swing.JFrame {
         jumlahTextField = new javax.swing.JTextField();
         submitButton = new javax.swing.JButton();
         cbJenisBahan = new javax.swing.JComboBox<>();
+        logoutbtn3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -170,6 +180,14 @@ public class Dashboard extends javax.swing.JFrame {
         });
         pesananPanel.add(pesananSiapButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 510, -1, -1));
 
+        logoutbtn.setText("Logout");
+        logoutbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoutbtnActionPerformed(evt);
+            }
+        });
+        pesananPanel.add(logoutbtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 30, -1, -1));
+
         jTabbedPane1.addTab("Pesanan", pesananPanel);
 
         closingPanel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -201,6 +219,14 @@ public class Dashboard extends javax.swing.JFrame {
         });
         closingPanel.add(submitClosingButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 510, -1, -1));
 
+        logoutbtn2.setText("Logout");
+        logoutbtn2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoutbtn2ActionPerformed(evt);
+            }
+        });
+        closingPanel.add(logoutbtn2, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 30, -1, -1));
+
         jTabbedPane1.addTab("Closing", closingPanel);
 
         restockPanel.setBackground(new java.awt.Color(204, 204, 204));
@@ -231,6 +257,14 @@ public class Dashboard extends javax.swing.JFrame {
 
         cbJenisBahan.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         restockPanel.add(cbJenisBahan, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 100, 110, -1));
+
+        logoutbtn3.setText("Logout");
+        logoutbtn3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                logoutbtn3ActionPerformed(evt);
+            }
+        });
+        restockPanel.add(logoutbtn3, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 30, -1, -1));
 
         jTabbedPane1.addTab("Restock", restockPanel);
 
@@ -305,6 +339,8 @@ public class Dashboard extends javax.swing.JFrame {
                 keteranganTextField.setText(""); // Reset keterangan juga jika ada
                 
                 refreshData(); // Refresh tabel stok/closing
+            } else {
+                javax.swing.JOptionPane.showMessageDialog(this, "Gagal Menambah Stok! Cek Database.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         } catch (NumberFormatException e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Jumlah harus berupa angka!");
@@ -336,6 +372,48 @@ public class Dashboard extends javax.swing.JFrame {
         refreshData();
     }//GEN-LAST:event_submitClosingButtonActionPerformed
 
+    private void logoutbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutbtnActionPerformed
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, "Yakin ingin Logout?");
+        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+            new landingPage().setVisible(true);
+            this.dispose(); // Tutup jendela Admin
+            
+            // Buka Login Frame (Asumsi nama file Anda LoginFrame)
+            // new view.LoginFrame().setVisible(true); 
+            
+            // Atau jika belum ada LoginFrame, matikan aplikasi:
+            // System.exit(0); 
+        }
+    }//GEN-LAST:event_logoutbtnActionPerformed
+
+    private void logoutbtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutbtn2ActionPerformed
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, "Yakin ingin Logout?");
+        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+            new landingPage().setVisible(true);
+            this.dispose(); // Tutup jendela Admin
+            
+            // Buka Login Frame (Asumsi nama file Anda LoginFrame)
+            // new view.LoginFrame().setVisible(true); 
+            
+            // Atau jika belum ada LoginFrame, matikan aplikasi:
+            // System.exit(0); 
+        }
+    }//GEN-LAST:event_logoutbtn2ActionPerformed
+
+    private void logoutbtn3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logoutbtn3ActionPerformed
+        int confirm = javax.swing.JOptionPane.showConfirmDialog(this, "Yakin ingin Logout?");
+        if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+            new landingPage().setVisible(true);
+            this.dispose(); // Tutup jendela Admin
+            
+            // Buka Login Frame (Asumsi nama file Anda LoginFrame)
+            // new view.LoginFrame().setVisible(true); 
+            
+            // Atau jika belum ada LoginFrame, matikan aplikasi:
+            // System.exit(0); 
+        }
+    }//GEN-LAST:event_logoutbtn3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -358,7 +436,7 @@ public class Dashboard extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new Dashboard().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> new DashboardBarista().setVisible(true));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -375,6 +453,9 @@ public class Dashboard extends javax.swing.JFrame {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField jumlahTextField;
     private javax.swing.JTextField keteranganTextField;
+    private javax.swing.JButton logoutbtn;
+    private javax.swing.JButton logoutbtn2;
+    private javax.swing.JButton logoutbtn3;
     private javax.swing.JPanel pesananPanel;
     private javax.swing.JButton pesananSiapButton;
     private javax.swing.JTable pesananTable;

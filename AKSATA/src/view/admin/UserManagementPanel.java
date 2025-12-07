@@ -71,7 +71,15 @@ public class UserManagementPanel extends javax.swing.JPanel {
             new String [] {
                 "ID", "Username", "Role", "Cabang"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(tblUsers);
 
         tambahUserButton.setText("Tambah User");
@@ -148,7 +156,15 @@ public class UserManagementPanel extends javax.swing.JPanel {
             new String [] {
                 "Waktu", "Aktivitas (Login/Input Stok/Transaksi)", "Keterangan"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(tblUserLogs);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);

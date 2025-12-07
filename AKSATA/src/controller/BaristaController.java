@@ -8,7 +8,11 @@ import java.util.Vector;
 public class BaristaController {
     
     Connection conn = DatabaseConnection.getConnection();
-    int ID_CABANG = 1; // HARDCODE: Asumsi Barista ini ada di Cabang 1 (Jakarta)
+    private int currentCabangID = 1; // Default 1
+    
+    public void setCabangID(int id) {
+        this.currentCabangID = id;
+    }
 
     // ==========================================
     // LOGIC TAB 1: PESANAN (Incoming Orders)
@@ -24,7 +28,7 @@ public class BaristaController {
                      "ORDER BY t.tanggal ASC";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, ID_CABANG);
+            ps.setInt(1, currentCabangID);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Vector row = new Vector();
@@ -65,7 +69,7 @@ public class BaristaController {
                      "WHERE sc.id_cabang = ?";
         
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, ID_CABANG);
+            ps.setInt(1, currentCabangID);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Vector row = new Vector();
@@ -93,7 +97,7 @@ public class BaristaController {
             // Insert Log
             PreparedStatement psLog = conn.prepareStatement(sqlLog);
             double selisih = stokFisik - stokSistem;
-            psLog.setInt(1, ID_CABANG);
+            psLog.setInt(1, currentCabangID);
             psLog.setInt(2, idBahan);
             psLog.setDouble(3, stokSistem);
             psLog.setDouble(4, stokFisik);
@@ -104,7 +108,7 @@ public class BaristaController {
             // Update Master Stok (Reset ke fisik)
             PreparedStatement psUp = conn.prepareStatement(sqlUpdate);
             psUp.setDouble(1, stokFisik);
-            psUp.setInt(2, ID_CABANG);
+            psUp.setInt(2, currentCabangID);
             psUp.setInt(3, idBahan);
             psUp.executeUpdate();
             
@@ -129,21 +133,39 @@ public class BaristaController {
         return -1; // Not found
     }
 
+    // UPDATE METHOD INI DI BaristaController.java
     public boolean submitRestock(int idBahan, double jumlah) {
-        // Tambah Stok
-        String sql = "UPDATE stok_cabang SET stok_sistem = stok_sistem + ? WHERE id_cabang = ? AND id_bahan = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        // 1. Coba UPDATE dulu (Asumsi stok sudah ada)
+        String sqlUpdate = "UPDATE stok_cabang SET stok_sistem = stok_sistem + ? WHERE id_cabang = ? AND id_bahan = ?";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sqlUpdate)) {
             ps.setDouble(1, jumlah);
-            ps.setInt(2, ID_CABANG);
+            ps.setInt(2, currentCabangID);
             ps.setInt(3, idBahan);
-            int rows = ps.executeUpdate();
-            return rows > 0;
+            
+            int rowsAffected = ps.executeUpdate();
+            
+            // Jika berhasil update (ada baris yang berubah), return true
+            if (rowsAffected > 0) {
+                return true; 
+            }
+            
+            // 2. Jika UPDATE gagal (rows == 0), berarti bahan ini belum ada di cabang ini.
+            // Lakukan INSERT baru.
+            String sqlInsert = "INSERT INTO stok_cabang (id_cabang, id_bahan, stok_sistem) VALUES (?, ?, ?)";
+            try (PreparedStatement psInsert = conn.prepareStatement(sqlInsert)) {
+                psInsert.setInt(1, currentCabangID);
+                psInsert.setInt(2, idBahan);
+                psInsert.setDouble(3, jumlah);
+                psInsert.executeUpdate();
+                return true; // Sukses insert baru
+            }
+            
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return false; // Benar-benar error database
         }
     }
-    
     // Method untuk mengambil daftar nama bahan untuk ComboBox
     public java.util.Vector<String> getAllBahanNames() {
         java.util.Vector<String> listBahan = new java.util.Vector<>();

@@ -6,6 +6,7 @@ package view.admin;
 import view.admin.*; 
 import java.awt.CardLayout;
 import controller.*;
+import view.landingPage;
 
 /**
  *
@@ -128,6 +129,7 @@ public class adminMainFrame extends javax.swing.JFrame {
     private void btnLogoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLogoutActionPerformed
         int confirm = javax.swing.JOptionPane.showConfirmDialog(this, "Yakin ingin Logout?");
         if (confirm == javax.swing.JOptionPane.YES_OPTION) {
+            new landingPage().setVisible(true);
             this.dispose(); // Tutup jendela Admin
             
             // Buka Login Frame (Asumsi nama file Anda LoginFrame)

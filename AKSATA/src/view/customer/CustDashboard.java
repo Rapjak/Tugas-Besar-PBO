@@ -79,6 +79,7 @@ public class CustDashboard extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         bungkusComboBox = new javax.swing.JComboBox<>();
         bayarButton = new javax.swing.JButton();
+        cbMetodeBayar = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
@@ -123,7 +124,7 @@ public class CustDashboard extends javax.swing.JFrame {
         );
 
         menuPanel.setBackground(new java.awt.Color(255, 255, 255));
-        menuPanel.setLayout(new java.awt.GridLayout());
+        menuPanel.setLayout(new java.awt.GridLayout(1, 0));
         jScrollPane1.setViewportView(menuPanel);
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -166,6 +167,13 @@ public class CustDashboard extends javax.swing.JFrame {
             }
         });
 
+        cbMetodeBayar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cash ", "QRIS", "Transfer" }));
+        cbMetodeBayar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cbMetodeBayarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
@@ -194,7 +202,10 @@ public class CustDashboard extends javax.swing.JFrame {
                         .addComponent(bungkusComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(bayarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(bayarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(cbMetodeBayar, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -210,11 +221,13 @@ public class CustDashboard extends javax.swing.JFrame {
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(namaField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(bungkusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cbMetodeBayar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                 .addComponent(bayarButton)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -247,7 +260,7 @@ public class CustDashboard extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(jScrollPane1)
                             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addContainerGap(7, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -308,21 +321,36 @@ public class CustDashboard extends javax.swing.JFrame {
     }
     
     private void showDetailDialog(Menu m) {
-        // Kirim data menu ke Dialog
-        MenuDetailDialog dialog = new MenuDetailDialog(this, m.getName(), m.getPrice(), m.getDescription());
+        // 1. Ambil data Add-on dari Controller
+        java.util.List<model.AddOn> addons = menuController.getAddOnsForMenu(m.getId());
+
+        // 2. Kirim data menu DAN add-on ke Dialog
+        MenuDetailDialog dialog = new MenuDetailDialog(this, m.getName(), m.getPrice(), m.getDescription(), addons);
         dialog.setVisible(true);
 
         if (dialog.isConfirmed) {
             String details = dialog.selectedSize + ", " + dialog.selectedSugar + ", " + dialog.selectedIce;
+            
+            // Tambahkan info Addon ke string detail tampilan
+            if (!dialog.selectedAddOns.isEmpty()) {
+                details += "<br>+ ";
+                for (model.AddOn ad : dialog.selectedAddOns) {
+                    details += ad.getName() + ", ";
+                }
+                // Hapus koma terakhir
+                details = details.substring(0, details.length() - 2);
+            }
+            
             if(dialog.isTumbler) details += " (Tumbler)";
             
-            // Masukkan ke List Keranjang (Pakai Model CartItem)
+            // 3. Masukkan ke Keranjang (Update Constructor CartItem)
             cartList.add(new CartItem(
-                m.getId(), // ID
-                m.getName(),               // Nama
-                details,                   // Detail
-                dialog.finalPrice,         // Harga Final
-                dialog.selectedNote        // Catatan
+                m.getId(), 
+                m.getName(),                
+                details,                    
+                dialog.finalPrice,          
+                dialog.selectedNote,
+                dialog.selectedAddOns // <-- Kirim List Addon ke CartItem
             ));
             
             updateCartUI();
@@ -391,14 +419,17 @@ public class CustDashboard extends javax.swing.JFrame {
             return;
         }
 
-        String tipe = (String) bungkusComboBox.getSelectedItem();
+        String tipePesanan = (String) bungkusComboBox.getSelectedItem();
+        // AMBIL METODE BAYAR DARI COMBOBOX BARU
+        String metodeBayar = (String) cbMetodeBayar.getSelectedItem(); 
+
         int confirm = JOptionPane.showConfirmDialog(this, 
-            "Total: Rp " + (int)grandTotal + "\nLanjutkan?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+            "Total: Rp " + (int)grandTotal + "\nMetode: " + metodeBayar + "\nLanjutkan?", 
+            "Konfirmasi", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            // PANGGIL CONTROLLER UNTUK PROSES TRANSAKSI
-            // View tidak peduli bagaimana caranya disimpan, dia cuma terima hasil sukses/gagal
-            boolean sukses = orderController.processCheckout(idCabang, namaField.getText(), tipe, grandTotal, cartList);
+            // Update method processCheckout di OrderController agar menerima metodeBayar
+            boolean sukses = orderController.processCheckout(idCabang, namaField.getText(), tipePesanan, metodeBayar, grandTotal, cartList);
             
             if (sukses) {
                 JOptionPane.showMessageDialog(this, "Pesanan Berhasil!");
@@ -429,6 +460,10 @@ public class CustDashboard extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_kembaliButtonActionPerformed
 
+    private void cbMetodeBayarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbMetodeBayarActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cbMetodeBayarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -457,6 +492,7 @@ public class CustDashboard extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton bayarButton;
     private javax.swing.JComboBox<String> bungkusComboBox;
+    private javax.swing.JComboBox<String> cbMetodeBayar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

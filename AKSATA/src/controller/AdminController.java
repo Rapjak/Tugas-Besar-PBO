@@ -317,5 +317,55 @@ public class AdminController {
         } catch (SQLException e) { e.printStackTrace(); }
     }
     
-   
+    // ================== FITUR TAMBAH MENU BARU ==================
+    public boolean addNewMenu(int idCabang, String nama, String kategori, String deskripsi, double harga) {
+        // Kita gunakan Transaction agar jika satu gagal, semua batal (Data Aman)
+        try {
+            conn.setAutoCommit(false); 
+
+            // 1. Insert ke Tabel MENU (Data Umum)
+            String sqlMenu = "INSERT INTO menu (nama_menu, kategori, deskripsi, nama_petani) VALUES (?, ?, ?, 'House Blend')";
+            // Catatan: nama_petani di-default dulu, nanti bisa diedit kalau perlu detail
+            PreparedStatement psMenu = conn.prepareStatement(sqlMenu, Statement.RETURN_GENERATED_KEYS);
+            psMenu.setString(1, nama);
+            psMenu.setString(2, kategori);
+            psMenu.setString(3, deskripsi);
+            psMenu.executeUpdate();
+
+            // Ambil ID Menu yang baru saja dibuat
+            ResultSet rs = psMenu.getGeneratedKeys();
+            int idMenuBaru = 0;
+            if (rs.next()) {
+                idMenuBaru = rs.getInt(1);
+            } else {
+                throw new SQLException("Gagal mendapatkan ID Menu baru.");
+            }
+
+            // 2. Insert ke Tabel MENU_HARGA (Harga Regular)
+            String sqlHarga = "INSERT INTO menu_harga (id_menu, ukuran, harga_jual) VALUES (?, 'regular', ?)";
+            PreparedStatement psHarga = conn.prepareStatement(sqlHarga);
+            psHarga.setInt(1, idMenuBaru);
+            psHarga.setDouble(2, harga);
+            psHarga.executeUpdate();
+
+            // 3. Insert ke Tabel MENU_CABANG (Agar muncul di cabang ini)
+            String sqlCabang = "INSERT INTO menu_cabang (id_menu, id_cabang, is_available) VALUES (?, ?, 1)";
+            PreparedStatement psCabang = conn.prepareStatement(sqlCabang);
+            psCabang.setInt(1, idMenuBaru);
+            psCabang.setInt(2, idCabang);
+            psCabang.executeUpdate();
+
+            // Jika semua sukses, simpan permanen
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try { conn.rollback(); } catch (SQLException ex) {} // Batalkan jika error
+            return false;
+        } finally {
+            try { conn.setAutoCommit(true); } catch (SQLException ex) {}
+        }
+    }
+    
 }

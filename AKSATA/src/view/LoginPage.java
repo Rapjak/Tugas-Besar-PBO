@@ -3,7 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package view;
-import view.barista.Dashboard;
+import view.barista.DashboardBarista;
 
 /**
  *
@@ -142,22 +142,30 @@ public class LoginPage extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
-        // TODO add your handling code here:
-        String user = usernameField.getText();
-        String pass = new String(passwordField.getPassword());
-        if (user.isEmpty() || pass.isEmpty()) {
+        String usernameText = usernameField.getText(); // Ganti nama var biar gak bingung
+        String passwordText = new String(passwordField.getPassword());
+        
+        if (usernameText.isEmpty() || passwordText.isEmpty()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Username dan Password harus diisi!");
             return;
         }
 
-        // Panggil Controller (Pastikan UserController sudah diimport di atas)
         controller.UserController userController = new controller.UserController();
-        model.User loggedUser = userController.login(user, pass);
+        // Login dan simpan ke variabel 'loggedUser'
+        model.User loggedUser = userController.login(usernameText, passwordText);
 
         if (loggedUser != null) {
             javax.swing.JOptionPane.showMessageDialog(this, "Login Berhasil! Role: " + loggedUser.getRole());
-            new Dashboard().setVisible(true);
-
+            
+            // Cek Role untuk redirect
+            if (loggedUser.getRole().equalsIgnoreCase("barista")) {
+                // Panggil DashboardBarista dengan ID Cabang dari loggedUser
+                new view.barista.DashboardBarista(loggedUser.getIdCabang()).setVisible(true);
+            } else if (loggedUser.getRole().equalsIgnoreCase("admin") || loggedUser.getRole().equalsIgnoreCase("manager")) {
+                // Panggil Dashboard Admin
+                new view.admin.adminMainFrame().setVisible(true);
+            }
+            
             this.dispose(); 
         } else {
             javax.swing.JOptionPane.showMessageDialog(this, "Username/Password Salah!", "Gagal", javax.swing.JOptionPane.ERROR_MESSAGE);

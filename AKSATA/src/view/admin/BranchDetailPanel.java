@@ -85,6 +85,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
         setUnavailableButton = new javax.swing.JButton();
         tambahPromoBaruButton = new javax.swing.JButton();
         ubahHargaButton = new javax.swing.JButton();
+        tambahMenuButton = new javax.swing.JButton();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane6 = new javax.swing.JScrollPane();
         tblLogTransaksi = new javax.swing.JTable();
@@ -100,27 +101,38 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             new String [] {
                 "Top Menu"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblTopSelling.setEnabled(false);
         jScrollPane1.setViewportView(tblTopSelling);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(320, Short.MAX_VALUE)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 501, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(279, 279, 279))
+                .addContainerGap(593, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(29, 29, 29)
+                .addGap(26, 26, 26)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Ringkasan", jPanel1);
+
+        jScrollPane2.setEnabled(false);
 
         tblStokCabang.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -132,7 +144,15 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             new String [] {
                 "Nama Bahan", "Stok Sistem", "Satuan", "Status"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(tblStokCabang);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -164,7 +184,16 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             new String [] {
                 "Tanggal", "Bahan", "Stok Sistem", "Stok Fisik", "Selisih", "Alasan", "Barista Pelapor"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tblVarianceReport.setEnabled(false);
         jScrollPane3.setViewportView(tblVarianceReport);
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
@@ -218,9 +247,16 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             Class[] types = new Class [] {
                 java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, true
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane4.setViewportView(tblMenuCabang);
@@ -239,9 +275,16 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             Class[] types = new Class [] {
                 java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class, java.lang.Boolean.class
             };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, true
+            };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         jScrollPane5.setViewportView(tblDiskon);
@@ -267,6 +310,13 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             }
         });
 
+        tambahMenuButton.setText("Tambah Menu");
+        tambahMenuButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tambahMenuButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -278,6 +328,8 @@ public class BranchDetailPanel extends javax.swing.JPanel {
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(setUnavailableButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(tambahMenuButton)
+                        .addGap(18, 18, 18)
                         .addComponent(ubahHargaButton)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -296,7 +348,8 @@ public class BranchDetailPanel extends javax.swing.JPanel {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(setUnavailableButton)
                     .addComponent(tambahPromoBaruButton)
-                    .addComponent(ubahHargaButton))
+                    .addComponent(ubahHargaButton)
+                    .addComponent(tambahMenuButton))
                 .addGap(24, 24, 24))
         );
 
@@ -312,7 +365,15 @@ public class BranchDetailPanel extends javax.swing.JPanel {
             new String [] {
                 "Waktu", "ID Trx", "Kasir", "Total Bayar", "Metode Bayar"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane6.setViewportView(tblLogTransaksi);
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
@@ -362,13 +423,22 @@ public class BranchDetailPanel extends javax.swing.JPanel {
     private void setUnavailableButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setUnavailableButtonActionPerformed
         int row = tblMenuCabang.getSelectedRow();
         if (row != -1) {
-            int idMenu = (int) tblMenuCabang.getValueAt(row, 0); // Pastikan Kolom 0 itu ID Menu
-            boolean currentStatus = (boolean) tblMenuCabang.getValueAt(row, 5); // Kolom 5 itu Status (Checkbox)
+            // Ambil ID Menu dari kolom hidden (index 0)
+            int idMenu = Integer.parseInt(tblMenuCabang.getValueAt(row, 0).toString());
+            // Ambil status saat ini (True/False)
+            boolean currentStatus = (boolean) tblMenuCabang.getValueAt(row, 5); 
+            
+            // Toggle Status (Balik nilainya)
+            boolean newStatus = !currentStatus;
 
-            // Toggle (Balik nilai)
-            controller.updateMenuStatus(currentCabangID, idMenu, !currentStatus);
-            refreshTables();
-            JOptionPane.showMessageDialog(this, "Status Menu Diubah!");
+            // Panggil Controller dengan ID Cabang yang sedang aktif
+            // Method ini sudah benar di AdminController, dia pakai WHERE id_cabang = ? AND id_menu = ?
+            controller.updateMenuStatus(currentCabangID, idMenu, newStatus);
+            
+            refreshTables(); // Refresh agar tabel update tampilan
+            
+            String statusText = newStatus ? "Tersedia" : "Tidak Tersedia";
+            JOptionPane.showMessageDialog(this, "Status Menu Diubah Menjadi: " + statusText);
         } else {
             JOptionPane.showMessageDialog(this, "Pilih menu dulu!");
         }
@@ -437,6 +507,60 @@ public class BranchDetailPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tambahPromoBaruButtonActionPerformed
 
+    private void tambahMenuButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahMenuButtonActionPerformed
+        // Membuat Panel Form Input
+        javax.swing.JPanel p = new javax.swing.JPanel(new java.awt.GridLayout(0, 2, 10, 10));
+        
+        javax.swing.JTextField txtNama = new javax.swing.JTextField();
+        String[] kats = {"coffee", "non-coffee", "snack", "beans"};
+        javax.swing.JComboBox<String> cbKategori = new javax.swing.JComboBox<>(kats);
+        javax.swing.JTextField txtDeskripsi = new javax.swing.JTextField("-");
+        javax.swing.JTextField txtHarga = new javax.swing.JTextField();
+
+        p.add(new javax.swing.JLabel("Nama Menu:"));
+        p.add(txtNama);
+        
+        p.add(new javax.swing.JLabel("Kategori:"));
+        p.add(cbKategori);
+        
+        p.add(new javax.swing.JLabel("Deskripsi Singkat:"));
+        p.add(txtDeskripsi);
+        
+        p.add(new javax.swing.JLabel("Harga (Regular):"));
+        p.add(txtHarga);
+
+        // Tampilkan Dialog
+        int result = JOptionPane.showConfirmDialog(this, p, "Tambah Menu Baru", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+        
+        if (result == JOptionPane.OK_OPTION) {
+            // Validasi Input Kosong
+            if(txtNama.getText().isEmpty() || txtHarga.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Nama dan Harga wajib diisi!");
+                return;
+            }
+            
+            try {
+                String nama = txtNama.getText();
+                String kat = cbKategori.getSelectedItem().toString();
+                String desk = txtDeskripsi.getText();
+                double harga = Double.parseDouble(txtHarga.getText());
+                
+                // Panggil Controller
+                boolean sukses = controller.addNewMenu(currentCabangID, nama, kat, desk, harga);
+                
+                if(sukses) {
+                    JOptionPane.showMessageDialog(this, "Menu Berhasil Ditambahkan!");
+                    refreshTables(); // Refresh agar menu baru langsung muncul di tabel
+                } else {
+                    JOptionPane.showMessageDialog(this, "Gagal menambah menu. Cek database.");
+                }
+                
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Harga harus berupa angka!");
+            }
+        }
+    }//GEN-LAST:event_tambahMenuButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel jPanel1;
@@ -455,6 +579,7 @@ public class BranchDetailPanel extends javax.swing.JPanel {
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JLabel lblNamaCabang;
     private javax.swing.JButton setUnavailableButton;
+    private javax.swing.JButton tambahMenuButton;
     private javax.swing.JButton tambahPromoBaruButton;
     private javax.swing.JTable tblDiskon;
     private javax.swing.JTable tblLogTransaksi;

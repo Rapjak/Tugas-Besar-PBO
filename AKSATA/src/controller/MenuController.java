@@ -56,4 +56,30 @@ public class MenuController {
         }
         return list;
     }
+    
+    public java.util.List<model.AddOn> getAddOnsForMenu(int menuId) {
+        java.util.List<model.AddOn> list = new java.util.ArrayList<>();
+        Connection conn = config.DatabaseConnection.getConnection();
+        
+        // Query ini mengambil SEMUA add-on. 
+        // Jika di database Anda ada relasi khusus menu-addon, tambahkan WHERE id_menu = ?
+        String sql = "SELECT * FROM addons"; 
+        
+        try {
+            PreparedStatement ps = conn.prepareStatement(sql);
+            // ps.setInt(1, menuId); // Aktifkan jika tabel addons punya kolom id_menu
+            ResultSet rs = ps.executeQuery();
+            
+            while(rs.next()) {
+                list.add(new model.AddOn(
+                    rs.getInt("id_addon"),
+                    rs.getString("nama_addon"),
+                    rs.getDouble("harga")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }
